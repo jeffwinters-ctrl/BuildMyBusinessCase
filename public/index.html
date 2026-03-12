@@ -334,8 +334,8 @@ var BLOCKED_DOMAINS=['gmail.com','yahoo.com','hotmail.com','outlook.com','aol.co
 
 // ===== QUESTION DEFINITIONS =====
 var BASE_QS=[
-  {key:'pain_type',sec:'Getting Started',txt:'What problem are you solving?',type:'opt',opts:['Reducing unplanned downtime','Reducing labor costs / headcount','Reducing scrap, rework, or quality defects','Reducing energy or utility costs','Increasing throughput or capacity','Filling open roles faster (staffing / recruiting)','Reducing supplier or vendor costs','Improving safety or compliance','Reducing inventory or carrying costs','Other — I\'ll describe it'],other_key:'pain_type_other'},
-  {key:'vertical',sec:'Getting Started',txt:'What type of manufacturing operation is this?',type:'select',opts:['','Automotive (OEM or Tier supplier)','Aerospace & Defense','Food & Beverage / CPG','Metal Fabrication / Job Shop','Plastics / Injection Molding','Pharma / Medical Device','General Industrial / Heavy Equipment','Other Manufacturing'],labels:['Select one...','Automotive (OEM or Tier supplier)','Aerospace & Defense','Food & Beverage / CPG','Metal Fabrication / Job Shop','Plastics / Injection Molding','Pharma / Medical Device','General Industrial / Heavy Equipment','Other Manufacturing']},
+  {key:'pain_type',sec:'Getting Started',txt:'What problem does your product or service solve?',type:'opt',opts:['Reducing unplanned downtime','Reducing labor costs / headcount','Reducing scrap, rework, or quality defects','Reducing energy or utility costs','Increasing throughput or capacity','Filling open roles faster (staffing / recruiting)','Reducing supplier or vendor costs','Improving safety or compliance','Reducing inventory or carrying costs','Other — I\'ll describe it'],other_key:'pain_type_other'},
+  {key:'vertical',sec:'Getting Started',txt:'What type of manufacturing operation are you selling to?',type:'select',opts:['','Automotive (OEM or Tier supplier)','Aerospace & Defense','Food & Beverage / CPG','Metal Fabrication / Job Shop','Plastics / Injection Molding','Pharma / Medical Device','General Industrial / Heavy Equipment','Other Manufacturing'],labels:['Select one...','Automotive (OEM or Tier supplier)','Aerospace & Defense','Food & Beverage / CPG','Metal Fabrication / Job Shop','Plastics / Injection Molding','Pharma / Medical Device','General Industrial / Heavy Equipment','Other Manufacturing']},
   {key:'company',sec:'Getting Started',txt:"What's the prospect's company name?",type:'text',ph:'e.g. Acme Manufacturing'},
   {key:'role',sec:'Framing the Case',txt:'Who is this business case for?',hint:'Their role helps frame the output.',type:'opt',opts:['Plant Manager / Site Leader','VP or Director of Operations','Maintenance / Reliability Manager','Engineering Manager','Procurement / Purchasing','C-Suite (CEO, COO, CFO)','Other']}
 ];
@@ -393,9 +393,9 @@ var BRANCH_QS={
     {key:'inventory_reduction_pct',sec:'The Numbers',txt:'What % inventory reduction can your solution deliver?',type:'percent',ph:'e.g. 20'}
   ],
   custom:[
-    {key:'custom_problem',sec:'The Numbers',txt:'Describe the problem in one sentence.',type:'text',ph:'e.g. Reducing changeover time between production runs'},
-    {key:'current_annual_cost',sec:'The Numbers',txt:'What is this problem costing them annually?',type:'dollar',ph:'e.g. 200000',helper:'Your best estimate of the total annual impact'},
-    {key:'savings_pct',sec:'The Numbers',txt:'What % of that cost can your solution eliminate?',type:'percent',ph:'e.g. 30'}
+    {key:'custom_direction',sec:'The Numbers',txt:'Is your solution saving them money or helping them make more?',type:'opt',opts:['Saving money (reducing a cost)','Making more money (new revenue or output)']},
+    {key:'current_annual_cost',sec:'The Numbers',txt:'What\'s the annual dollar value at stake?',type:'dollar',ph:'e.g. 200000',helper:'For cost reduction: what they spend now. For revenue: what they could be making.'},
+    {key:'savings_pct',sec:'The Numbers',txt:'What % of that can your solution deliver?',type:'percent',ph:'e.g. 30'}
   ]
 };
 
@@ -652,7 +652,8 @@ function calculate(){
       break;
     case'custom':
       annualSavings=n('current_annual_cost')*(n('savings_pct')/100);
-      details={customProblem:ans.custom_problem||ans.pain_type_other||'the identified problem'};
+      var isGain=(ans.custom_direction||'').indexOf('Making')===0;
+      details={isGain:isGain,customDesc:ans.pain_type_other||'this area'};
       break;
   }
 
@@ -737,7 +738,7 @@ function buildResults(r){
     '<div class="r-card" style="animation-delay:.2s"><div class="r-card-label">Making the Case to '+role+'</div><div class="r-card-body">'+personaHtml+'</div></div>'+
     '<div class="action-bar">'+
     '<button class="act-btn pri" onclick="copySummary()">COPY SUMMARY</button>'+
-    '<button class="act-btn" onclick="window.print()">PRINT / SAVE PDF</button>'+
+    '<button class="act-btn" onclick="window.print()">DOWNLOAD PDF</button>'+
     '<button class="act-btn" onclick="emailResults()">EMAIL ME THIS</button>'+
     '</div>';
 
@@ -769,8 +770,10 @@ function buildProblem(r,company){
     case'inventory':
       return'<strong>'+company+'</strong> is carrying <strong>'+fmtD(n('current_inventory_value'))+' in inventory</strong> with an estimated carrying cost of <strong>'+n('carrying_cost_pct')+'% annually</strong> ('+fmtD(r.details.carryingCost)+'/year). Reducing inventory by '+n('inventory_reduction_pct')+'% would free up <strong>'+fmtD(n('current_inventory_value')*(n('inventory_reduction_pct')/100))+' in working capital</strong> and save <strong>'+fmtD(r.annualSavings)+'</strong> per year in carrying costs.';
     case'custom':
-      var probDesc=r.details.customProblem||'the identified operational challenge';
-      return'<strong>'+company+'</strong> is spending an estimated <strong>'+fmtD(n('current_annual_cost'))+' per year</strong> on '+probDesc+'. With a <strong>'+n('savings_pct')+'% improvement</strong>, your solution would deliver <strong>'+fmtD(r.annualSavings)+' in annual savings</strong>.';
+      if(r.details.isGain){
+        return'There is an estimated <strong>'+fmtD(n('current_annual_cost'))+' per year</strong> in untapped revenue or output potential for <strong>'+company+'</strong>. Your solution can capture <strong>'+n('savings_pct')+'%</strong> of that &mdash; adding <strong>'+fmtD(r.annualSavings)+' in annual value</strong>.';
+      }
+      return'<strong>'+company+'</strong> is spending an estimated <strong>'+fmtD(n('current_annual_cost'))+' per year</strong> on this problem. With a <strong>'+n('savings_pct')+'% improvement</strong>, your solution would deliver <strong>'+fmtD(r.annualSavings)+' in annual savings</strong>.';
     default:
       return'Based on the numbers provided, there is an opportunity to save <strong>'+fmtD(r.annualSavings)+'</strong> annually.';
   }
@@ -842,9 +845,15 @@ function buildImpact(r){
       changesHtml+='<li>Less obsolescence risk, less warehouse space needed</li>';
       break;
     case'custom':
-      mathHtml+='<li>'+fmtD(n('current_annual_cost'))+' annual cost &times; '+n('savings_pct')+'% improvement = <strong>'+fmtD(r.annualSavings)+' annual savings</strong></li>';
-      changesHtml+='<li>Annual cost of this problem drops from '+fmtD(n('current_annual_cost'))+' to ~'+fmtD(n('current_annual_cost')-r.annualSavings)+'</li>';
-      changesHtml+='<li>Measurable improvement that shows up on the bottom line</li>';
+      if(r.details.isGain){
+        mathHtml+='<li>'+fmtD(n('current_annual_cost'))+' revenue potential &times; '+n('savings_pct')+'% captured = <strong>'+fmtD(r.annualSavings)+' annual value added</strong></li>';
+        changesHtml+='<li>New annual revenue or output of '+fmtD(r.annualSavings)+'</li>';
+        changesHtml+='<li>Directly grows top-line revenue or unlocks new capacity</li>';
+      }else{
+        mathHtml+='<li>'+fmtD(n('current_annual_cost'))+' annual cost &times; '+n('savings_pct')+'% improvement = <strong>'+fmtD(r.annualSavings)+' annual savings</strong></li>';
+        changesHtml+='<li>Annual cost drops from '+fmtD(n('current_annual_cost'))+' to ~'+fmtD(n('current_annual_cost')-r.annualSavings)+'</li>';
+        changesHtml+='<li>Measurable improvement that shows up on the bottom line</li>';
+      }
       break;
   }
   mathHtml+='</ul>';
@@ -929,10 +938,22 @@ var PERSONA={
 
 function buildPersona(r,role){
   var p=PERSONA[role]||PERSONA['Other'];
+  var paybackTxt=r.paybackMonths<1?'immediate':r.paybackMonths>99?'over 24 months':Math.round(r.paybackMonths)+' months';
+  var roiTxt=r.roi>0?fmt(Math.round(r.roi))+'%':'positive';
+
+  var dynPoints=[
+    '"This saves '+fmtD(r.annualSavings)+' a year with a '+paybackTxt+' payback &mdash; the math is straightforward."',
+    '"Over 3 years, the net value is '+fmtD(r.threeYearValue)+' on a '+fmtD(r.annualInvestment)+' investment &mdash; that\'s a '+roiTxt+' return."',
+    '"Even at 75% of our estimates, you\'re still looking at '+fmtD(r.annualSavings*0.75)+'/year. The case holds up conservatively."'
+  ];
+
   var html='<div class="persona-tip"><div class="persona-tip-label">What They Care About</div><div class="persona-tip-txt">'+p.cares+'</div></div>';
   html+='<div class="persona-tip" style="margin-top:10px"><div class="persona-tip-label">How to Frame This</div><div class="persona-tip-txt">'+p.frame+'</div></div>';
   html+='<div style="margin-top:14px"><strong>Key Talking Points:</strong><ul>';
   p.points.forEach(function(pt){html+='<li>'+pt+'</li>'});
+  html+='</ul></div>';
+  html+='<div style="margin-top:14px"><strong>Say This in the Meeting:</strong><ul>';
+  dynPoints.forEach(function(pt){html+='<li>'+pt+'</li>'});
   html+='</ul></div>';
   return html;
 }
@@ -978,22 +999,11 @@ function copySummary(){
 
 function emailResults(){
   var txt=buildTextSummary();
-  fetch(FORMSPREE,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      name:leadInfo.name,
-      email:leadInfo.email,
-      _replyto:leadInfo.email,
-      subject:'Your Business Case - '+(ans.company||'Manufacturing'),
-      results_summary:txt,
-      source:'Build My Business Case - Manufacturing (Email Results)'
-    })
-  }).then(function(){
-    showToast('Results sent to '+leadInfo.email);
-  }).catch(function(){
-    showToast('Could not send — try Copy Summary instead');
-  });
+  var subject=encodeURIComponent('Business Case: '+(ans.company||'Manufacturing'));
+  var body=encodeURIComponent(txt);
+  var email=leadInfo.email||'';
+  window.location.href='mailto:'+email+'?subject='+subject+'&body='+body;
+  showToast('Opening your email client...');
 }
 
 function resetAll(){
