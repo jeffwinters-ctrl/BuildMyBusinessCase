@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build My Business Case — Manufacturing | Powered by Sapper</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f5f8fa;--bg2:#e8eef3;--bg3:#d4dfe8;
+  --surface:#ffffff;--ink:#0a0a0a;--ink2:#1a1a1a;--ink3:#4a5568;--ink4:#718096;
+  --rule:#cbd5e0;--red:#e53e3e;--amber:#d69e2e;--green:#38a169;--blue:#3b82f6;--accent:#1e40af;
+  --fh:'Oswald',sans-serif;--fb:'Source Sans 3',sans-serif;--fs:'Source Serif 4',serif;
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--fb);min-height:100vh}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* HEADER */
+.hdr{background:#0a0a0a;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--blue);flex-shrink:0}
+.hdr-left{display:flex;align-items:center}
+.logo{font-family:var(--fh);font-size:20px;letter-spacing:3px;color:#fff;font-weight:700;white-space:nowrap}
+.logo span{color:var(--blue)}
+.logo-brand{font-family:var(--fh);font-size:16px;letter-spacing:2px;color:#fff;font-weight:400;margin-left:16px;padding-left:16px;border-left:2px solid var(--blue);white-space:nowrap}
+.logo-brand span{color:var(--blue);font-weight:700}
+.hdr-tag{font-family:var(--fh);font-size:11px;letter-spacing:3px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-left:24px;white-space:nowrap}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.hdr-btn{background:none;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);padding:8px 16px;font-family:var(--fh);font-size:12px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .15s;white-space:nowrap}
+.hdr-btn:hover{border-color:rgba(255,255,255,.6);color:#fff}
+
+/* FOOTER */
+.footer{background:#0a0a0a;padding:16px 32px;text-align:center;border-top:2px solid var(--blue);flex-shrink:0}
+.footer-brand{font-family:var(--fh);font-size:14px;letter-spacing:3px;color:var(--blue);text-transform:uppercase}
+.footer-brand span{color:#fff}
+
+/* LANDING */
+.hero-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 20px}
+.hero{max-width:560px;width:100%}
+.eyebrow{font-family:var(--fh);font-size:11px;letter-spacing:5px;color:var(--ink3);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.eyebrow::before{content:'';width:28px;height:2px;background:var(--accent)}
+.headline{font-family:var(--fh);font-size:52px;line-height:1.05;font-weight:700;letter-spacing:1px;margin-bottom:22px}
+.headline em{color:var(--accent);font-style:normal}
+.hero-body{font-family:var(--fs);font-size:16px;color:var(--ink2);line-height:1.7;margin-bottom:36px;border-left:3px solid var(--rule);padding-left:18px}
+.start-btn{background:var(--blue);color:#fff;border:none;padding:15px 38px;font-family:var(--fh);font-size:20px;letter-spacing:3px;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.start-btn:hover{background:#1e3a8a;transform:translateY(-1px)}
+.hero-note{margin-top:16px;font-family:var(--fh);font-size:11px;letter-spacing:2px;color:var(--ink4);text-transform:uppercase}
+.hero-div{width:100%;height:1px;background:var(--rule);margin:36px 0}
+.stats-row{display:flex;gap:28px}
+.stat-n{font-family:var(--fh);font-size:34px;color:var(--accent);line-height:1;margin-bottom:4px}
+.stat-l{font-size:13px;color:var(--ink3);line-height:1.4}
+
+/* LEAD GATE */
+.gate-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 20px}
+.gate-card{max-width:440px;width:100%;background:var(--surface);border:1px solid var(--rule);border-top:4px solid var(--blue);padding:36px 32px}
+.gate-title{font-family:var(--fh);font-size:24px;letter-spacing:2px;color:var(--ink);margin-bottom:8px;text-transform:uppercase}
+.gate-sub{font-family:var(--fs);font-size:15px;color:var(--ink3);margin-bottom:24px;line-height:1.6}
+.gate-input{width:100%;background:var(--bg);border:1px solid var(--rule);border-bottom:2px solid var(--blue);color:var(--ink);padding:14px 16px;font-family:var(--fb);font-size:15px;outline:none;margin-bottom:12px;transition:border-color .2s}
+.gate-input:focus{border-bottom-color:var(--accent)}
+.gate-input::placeholder{color:var(--ink4)}
+.gate-consent{margin:16px 0}
+.consent-label{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--ink3);line-height:1.5;cursor:pointer}
+.consent-label input{margin-top:3px;width:16px;height:16px;cursor:pointer}
+.consent-label a{color:var(--blue);text-decoration:underline}
+.gate-btn{width:100%;background:var(--blue);color:#fff;border:none;padding:15px 28px;font-family:var(--fh);font-size:18px;letter-spacing:3px;cursor:pointer;transition:all .15s;text-transform:uppercase;margin-top:8px}
+.gate-btn:hover{background:#1e3a8a}
+.gate-btn:disabled{background:var(--ink4);cursor:not-allowed}
+.gate-error{color:var(--red);font-size:13px;margin-top:8px;display:none}
+.gate-note{font-family:var(--fb);font-size:12px;color:var(--ink4);margin-top:16px;text-align:center}
+
+/* PRIVACY MODAL */
+.privacy-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;padding:20px}
+.privacy-overlay.open{display:flex}
+.privacy-modal{background:#fff;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;padding:32px;position:relative;border-top:4px solid var(--blue)}
+.privacy-close{position:absolute;top:12px;right:12px;background:none;border:1px solid var(--rule);width:32px;height:32px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
+.privacy-title{font-family:var(--fh);font-size:24px;margin-bottom:16px}
+.privacy-content{font-size:14px;line-height:1.7;color:var(--ink2)}
+.privacy-content h3{font-family:var(--fh);font-size:16px;margin:20px 0 8px;color:var(--ink)}
+.privacy-content p{margin-bottom:12px}
+
+/* QUESTIONS */
+.qwrap{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 20px}
+.qcard{max-width:560px;width:100%}
+.qprow{display:flex;align-items:center;gap:14px;margin-bottom:32px}
+.qptrack{flex:1;height:4px;background:var(--bg3)}
+.qpfill{height:100%;background:var(--blue);transition:width .4s ease}
+.qptxt{font-family:var(--fh);font-size:12px;letter-spacing:2px;color:var(--ink4);white-space:nowrap;text-transform:uppercase}
+.qsec{font-family:var(--fh);font-size:10px;letter-spacing:5px;color:var(--ink4);text-transform:uppercase;margin-bottom:8px}
+.qtxt{font-family:var(--fh);font-size:27px;font-weight:500;color:var(--ink);line-height:1.3;margin-bottom:8px;letter-spacing:.3px}
+.qhint{font-family:var(--fs);font-size:14px;color:var(--ink3);margin-bottom:22px;line-height:1.6;font-style:italic}
+.qopts{display:flex;flex-direction:column;gap:7px}
+.qopt{background:var(--surface);border:1px solid var(--rule);color:var(--ink2);padding:11px 16px;font-family:var(--fb);font-size:15px;cursor:pointer;transition:all .12s;text-align:left;display:flex;align-items:center;gap:12px}
+.qopt::before{content:'';width:13px;height:13px;border:2px solid var(--rule);border-radius:50%;flex-shrink:0;transition:all .12s}
+.qopt:hover{border-color:var(--blue);background:var(--bg2)}
+.qopt.sel{border-color:var(--blue);background:#e8eef5;color:var(--blue);font-weight:600}
+.qopt.sel::before{background:var(--blue);border-color:var(--blue)}
+.q-input{width:100%;background:var(--surface);border:1px solid var(--rule);border-bottom:2px solid var(--blue);color:var(--ink);padding:14px 16px;font-family:var(--fb);font-size:15px;outline:none;transition:border-color .2s}
+.q-input:focus{border-bottom-color:var(--accent)}
+.q-input::placeholder{color:var(--ink4)}
+.q-select{width:100%;background:var(--surface);border:1px solid var(--rule);border-bottom:2px solid var(--blue);color:var(--ink);padding:14px 16px;font-family:var(--fb);font-size:15px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23718096' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+.q-select:focus{border-bottom-color:var(--accent)}
+.num-wrap{display:flex;align-items:center;background:var(--surface);border:1px solid var(--rule);border-bottom:2px solid var(--blue);transition:border-color .2s}
+.num-wrap:focus-within{border-bottom-color:var(--accent)}
+.num-prefix,.num-suffix{padding:0 12px;font-family:var(--fh);font-size:18px;color:var(--ink3);user-select:none}
+.num-input{flex:1;border:none;background:none;padding:14px 4px;font-family:var(--fb);font-size:15px;color:var(--ink);outline:none}
+.num-input::placeholder{color:var(--ink4)}
+.q-helper{font-size:12px;color:var(--ink4);margin-top:6px;font-style:italic}
+.qnav{display:flex;gap:10px;margin-top:26px;align-items:center}
+.btnp{background:var(--blue);color:#fff;border:none;padding:13px 28px;font-family:var(--fh);font-size:16px;letter-spacing:2px;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.btnp:hover{background:#1e3a8a}
+.btns{background:transparent;border:1px solid var(--rule);color:var(--ink3);padding:13px 20px;font-family:var(--fh);font-size:13px;letter-spacing:2px;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.btns:hover{border-color:var(--ink3);color:var(--ink2)}
+
+/* RESULTS */
+.rband{background:#0a0a0a;padding:18px 32px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;flex-shrink:0}
+.rband-info{flex:1}
+.rdname{font-family:var(--fh);font-size:20px;letter-spacing:1px;color:#fff;font-weight:500}
+.rdmeta{font-size:13px;color:rgba(255,255,255,0.5);margin-top:2px;font-family:var(--fb)}
+.rband-right{display:flex;align-items:center;gap:14px}
+.roi-badge{padding:10px 22px;font-family:var(--fh);font-size:14px;letter-spacing:2px;text-transform:uppercase;border:2px solid;display:flex;flex-direction:column;align-items:center;gap:2px}
+.roi-badge.green{border-color:#70c890;color:#70c890}
+.roi-badge.yellow{border-color:#e8b84a;color:#e8b84a}
+.roi-badge.red{border-color:#e87060;color:#e87060}
+.roi-score{font-size:22px;line-height:1}
+.roi-label{font-size:10px;letter-spacing:3px;opacity:.8}
+
+.rbody{flex:1;display:grid;grid-template-columns:280px 1fr;overflow:hidden}
+.rsidebar{background:var(--surface);border-right:1px solid var(--rule);padding:24px 20px;overflow-y:auto}
+.sbhead{font-family:var(--fh);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--ink4);margin-bottom:16px;padding-bottom:7px;border-bottom:1px solid var(--rule)}
+.metric{padding:12px 0;border-bottom:1px solid var(--bg3)}
+.metric:last-child{border-bottom:none}
+.metric-label{font-family:var(--fh);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--ink4);margin-bottom:4px}
+.metric-value{font-family:var(--fh);font-size:28px;font-weight:700;line-height:1.2}
+.metric-value.savings{color:var(--green)}
+.metric-value.neutral{color:var(--ink)}
+.metric-value.small{font-size:22px}
+.metric-sub{font-size:12px;color:var(--ink4);margin-top:2px}
+
+.rmain{padding:26px 30px;overflow-y:auto}
+.rmain-title{font-family:var(--fh);font-size:26px;letter-spacing:2px;color:var(--ink);text-transform:uppercase;margin-bottom:6px}
+.rmain-sub{font-family:var(--fs);font-size:14px;color:var(--ink3);font-style:italic;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--rule);line-height:1.6}
+
+.r-card{background:var(--surface);border:1px solid var(--rule);border-left:4px solid var(--blue);margin-bottom:16px;padding:22px 20px;animation:fadeUp .35s ease both}
+.r-card-label{font-family:var(--fh);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--ink4);margin-bottom:10px}
+.r-card-body{font-family:var(--fs);font-size:15px;color:var(--ink2);line-height:1.7}
+.r-card-body ul{margin:12px 0;padding-left:20px}
+.r-card-body li{margin-bottom:6px}
+.r-card-body strong{color:var(--ink);font-family:var(--fb)}
+
+.scenario-row{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
+.scenario{flex:1;min-width:140px;background:var(--bg2);border:1px solid var(--rule);padding:12px 14px;text-align:center}
+.scenario-label{font-family:var(--fh);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:4px}
+.scenario-value{font-family:var(--fh);font-size:20px;font-weight:600}
+.scenario-value.con{color:var(--ink3)}
+.scenario-value.base{color:var(--blue)}
+.scenario-value.opt{color:var(--green)}
+
+.persona-tip{background:var(--bg2);border:1px solid var(--rule);border-left:3px solid var(--accent);padding:14px 16px;margin-top:14px}
+.persona-tip-label{font-family:var(--fh);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--ink4);margin-bottom:6px}
+.persona-tip-txt{font-family:var(--fs);font-size:14px;color:var(--ink2);line-height:1.6}
+
+.action-bar{display:flex;gap:10px;margin-top:28px;padding-top:20px;border-top:1px solid var(--rule);flex-wrap:wrap}
+.act-btn{padding:12px 22px;font-family:var(--fh);font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .12s;border:1px solid var(--rule);background:var(--surface);color:var(--ink2)}
+.act-btn:hover{border-color:var(--blue);color:var(--blue)}
+.act-btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.act-btn.pri:hover{background:#1e3a8a;border-color:#1e3a8a}
+
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--blue);color:#fff;padding:11px 22px;font-family:var(--fh);font-size:13px;letter-spacing:2px;text-transform:uppercase;transition:transform .3s ease;z-index:999;border-top:2px solid var(--accent)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--rule)}
+
+/* MOBILE */
+@media(max-width:768px){
+  .hdr{flex-wrap:wrap;padding:10px 16px;gap:8px}
+  .logo{font-size:15px;letter-spacing:2px}
+  .logo-brand{font-size:13px;margin-left:10px;padding-left:10px}
+  .hdr-tag{display:none}
+  .headline{font-size:36px}
+  .hero-wrap,.gate-wrap,.qwrap{padding:32px 16px}
+  .stats-row{flex-wrap:wrap;gap:20px}
+  .rbody{grid-template-columns:1fr}
+  .rsidebar{border-right:none;border-bottom:1px solid var(--rule)}
+  .rmain{padding:20px 16px}
+  .rband{padding:14px 16px}
+  .action-bar{flex-direction:column}
+  .act-btn{width:100%;text-align:center}
+  .scenario-row{flex-direction:column}
+  .start-btn,.gate-btn,.btnp{width:100%;text-align:center}
+}
+
+/* PRINT */
+@media print{
+  body{background:#fff}
+  .hdr,.footer,.action-bar,.hdr-btn{display:none!important}
+  .screen{display:none!important;min-height:auto!important}
+  #sr{display:flex!important}
+  .rband{background:#f0f0f0!important;color:#000!important;border-bottom:2px solid #000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .rdname{color:#000!important}
+  .rdmeta{color:#555!important}
+  .roi-badge{border-color:#333!important;color:#333!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .rbody{display:block!important}
+  .rsidebar{border-right:none;border-bottom:1px solid #ccc;padding:16px 0}
+  .rmain{padding:16px 0}
+  .r-card{break-inside:avoid;page-break-inside:avoid}
+  .metric-value.savings{color:#2d8a4e!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== SCREEN 1: LANDING ========== -->
+<div class="screen active" id="sl">
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="logo">BUILD MY BUSINESS CASE &mdash; <span>MANUFACTURING</span></div>
+      <div class="logo-brand">Powered by <span>SAPPER</span></div>
+      <div class="hdr-tag">Manufacturing ROI Calculator</div>
+    </div>
+  </div>
+  <div class="hero-wrap">
+    <div class="hero">
+      <div class="eyebrow">For Reps Who Sell to Manufacturers</div>
+      <div class="headline">Stop guessing.<br>Start <em>proving.</em></div>
+      <div class="hero-body">Answer a few quick questions about your deal. Get a ready-to-share business case with real dollar figures &mdash; built for the way manufacturers actually think about ROI.</div>
+      <button class="start-btn" onclick="goTo('sg')">BUILD MY CASE &rarr;</button>
+      <div class="hero-note">Takes about 2 minutes</div>
+      <div class="hero-div"></div>
+      <div class="stats-row">
+        <div><div class="stat-n">5</div><div class="stat-l">Pain categories covered</div></div>
+        <div><div class="stat-n">1</div><div class="stat-l">Page business case output</div></div>
+        <div><div class="stat-n">$</div><div class="stat-l">Real dollar figures</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><div class="footer-brand"><span>Presented by</span> SAPPER</div></div>
+</div>
+
+<!-- ========== SCREEN 2: LEAD GATE ========== -->
+<div class="screen" id="sg">
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="logo">BUILD MY BUSINESS CASE &mdash; <span>MANUFACTURING</span></div>
+      <div class="logo-brand">Powered by <span>SAPPER</span></div>
+    </div>
+    <div class="hdr-right"><button class="hdr-btn" onclick="goTo('sl')">&larr; BACK</button></div>
+  </div>
+  <div class="gate-wrap">
+    <div class="gate-card">
+      <div class="gate-title">Almost There</div>
+      <div class="gate-sub">Enter your info to get your personalized business case.</div>
+      <form id="leadForm" onsubmit="submitLead(event)">
+        <input type="text" class="gate-input" id="leadName" placeholder="Your Name" required>
+        <input type="tel" class="gate-input" id="leadPhone" placeholder="Phone Number" required>
+        <input type="email" class="gate-input" id="leadEmail" placeholder="Business Email" required>
+        <div class="gate-consent">
+          <label class="consent-label">
+            <input type="checkbox" id="leadConsent" required>
+            <span>I agree to receive calls and emails from Sapper about my results and related services. I have read and agree to the <a href="#" onclick="openPrivacy(event)">Privacy Policy</a>.</span>
+          </label>
+        </div>
+        <button type="submit" class="gate-btn" id="gateBtn">GET MY BUSINESS CASE &rarr;</button>
+        <div class="gate-error" id="gateError"></div>
+      </form>
+      <div class="gate-note">By submitting, you consent to being contacted by Sapper Consulting.</div>
+    </div>
+  </div>
+  <div class="footer"><div class="footer-brand"><span>Presented by</span> SAPPER</div></div>
+</div>
+
+<!-- ========== SCREEN 3: QUESTIONS ========== -->
+<div class="screen" id="sq">
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="logo">BUILD MY BUSINESS CASE &mdash; <span>MANUFACTURING</span></div>
+      <div class="logo-brand">Powered by <span>SAPPER</span></div>
+    </div>
+    <div class="hdr-right"><button class="hdr-btn" onclick="goTo('sl')">&larr; EXIT</button></div>
+  </div>
+  <div class="qwrap"><div class="qcard" id="qcard"></div></div>
+  <div class="footer"><div class="footer-brand"><span>Presented by</span> SAPPER</div></div>
+</div>
+
+<!-- ========== SCREEN 4: RESULTS ========== -->
+<div class="screen" id="sr">
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="logo">BUILD MY BUSINESS CASE &mdash; <span>MANUFACTURING</span></div>
+      <div class="logo-brand">Powered by <span>SAPPER</span></div>
+      <div class="hdr-tag">Results</div>
+    </div>
+    <div class="hdr-right"><button class="hdr-btn" onclick="resetAll()">NEW CALCULATION</button></div>
+  </div>
+  <div class="rband" id="rband"></div>
+  <div class="rbody">
+    <div class="rsidebar" id="rsidebar"></div>
+    <div class="rmain" id="rmain"></div>
+  </div>
+</div>
+
+<!-- PRIVACY MODAL -->
+<div class="privacy-overlay" id="privacyModal" onclick="closePrivacy(event)">
+  <div class="privacy-modal" onclick="event.stopPropagation()">
+    <button class="privacy-close" onclick="closePrivacyModal()">&#10005;</button>
+    <div class="privacy-title">Privacy Policy</div>
+    <div class="privacy-content">
+      <p><strong>Effective Date:</strong> March 2026</p>
+      <h3>Information We Collect</h3>
+      <p>When you use Build My Business Case, we collect the information you provide including your name, phone number, and business email address.</p>
+      <h3>How We Use Your Information</h3>
+      <p>&bull; Provide your business case analysis and results<br>
+      &bull; Contact you by phone and email regarding your results<br>
+      &bull; Send you information about Sapper's services<br>
+      &bull; Improve our services and user experience</p>
+      <h3>Consent to Contact</h3>
+      <p>By submitting your information, you expressly consent to receive calls (including via automated dialing systems and prerecorded messages) and emails from Sapper Consulting at the phone number and email address you provided. You understand that consent is not a condition of purchase and you may opt out at any time.</p>
+      <h3>How to Opt Out</h3>
+      <p>You may opt out of communications at any time by replying STOP to any text message, clicking unsubscribe in any email, or contacting us directly.</p>
+      <h3>Data Protection</h3>
+      <p>We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, or destruction.</p>
+      <h3>Contact Us</h3>
+      <p>If you have questions about this Privacy Policy, please contact Sapper Consulting.</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== CONFIGURATION =====
+var FORMSPREE='https://formspree.io/f/mqeybenr';
+var BLOCKED_DOMAINS=['gmail.com','yahoo.com','hotmail.com','outlook.com','aol.com','icloud.com','mail.com','ymail.com','live.com','msn.com','protonmail.com','zoho.com'];
+
+// ===== QUESTION DEFINITIONS =====
+var BASE_QS=[
+  {key:'pain_type',sec:'Getting Started',txt:'What type of pain or gain are you solving?',type:'opt',opts:['Reducing unplanned downtime','Reducing labor costs / headcount','Reducing scrap, rework, or quality defects','Reducing energy or utility costs','Increasing throughput or capacity']},
+  {key:'vertical',sec:'Getting Started',txt:'What type of manufacturing operation is this?',type:'select',opts:['','Automotive (OEM or Tier supplier)','Aerospace & Defense','Food & Beverage / CPG','Metal Fabrication / Job Shop','Plastics / Injection Molding','Pharma / Medical Device','General Industrial / Heavy Equipment','Other Manufacturing'],labels:['Select one...','Automotive (OEM or Tier supplier)','Aerospace & Defense','Food & Beverage / CPG','Metal Fabrication / Job Shop','Plastics / Injection Molding','Pharma / Medical Device','General Industrial / Heavy Equipment','Other Manufacturing']},
+  {key:'company',sec:'Getting Started',txt:"What's the company name?",type:'text',ph:'e.g. Acme Manufacturing'},
+  {key:'role',sec:'Framing the Case',txt:'Who is this business case for?',hint:'Their role helps frame the output.',type:'opt',opts:['Plant Manager / Site Leader','VP or Director of Operations','Maintenance / Reliability Manager','Engineering Manager','Procurement / Purchasing','C-Suite (CEO, COO, CFO)','Other']}
+];
+
+var BRANCH_QS={
+  downtime:[
+    {key:'prod_hours_week',sec:'The Numbers',txt:'How many production hours do they run per week?',type:'number',ph:'e.g. 120'},
+    {key:'cost_per_hour',sec:'The Numbers',txt:'Estimated cost per hour of unplanned downtime?',type:'dollar',ph:'e.g. 5000',helper:'Typical range: $5,000 - $50,000/hour depending on operation'},
+    {key:'downtime_hours_month',sec:'The Numbers',txt:'Estimated hours of unplanned downtime per month currently?',type:'number',ph:'e.g. 8'},
+    {key:'reduction_pct',sec:'The Numbers',txt:'What % reduction do you believe your solution can deliver?',type:'percent',ph:'e.g. 30'}
+  ],
+  labor:[
+    {key:'employees',sec:'The Numbers',txt:'How many employees are involved in this process currently?',type:'number',ph:'e.g. 12'},
+    {key:'cost_per_employee',sec:'The Numbers',txt:'Fully loaded cost per employee per year?',type:'dollar',ph:'e.g. 65000',helper:'Include wages, benefits, overhead. Typical: $50K-$80K'},
+    {key:'fte_reduction',sec:'The Numbers',txt:'Estimated FTE reduction or hours saved per week?',type:'number',ph:'e.g. 2 FTEs or 40 hours/week'},
+    {key:'labor_type',sec:'The Numbers',txt:'Is this a headcount reduction or redeployment?',type:'opt',opts:['Headcount reduction','Redeployment to higher-value work']}
+  ],
+  scrap:[
+    {key:'defect_rate',sec:'The Numbers',txt:'Current scrap/defect rate?',type:'percent',ph:'e.g. 4'},
+    {key:'annual_production',sec:'The Numbers',txt:'Annual production volume or revenue at risk?',type:'dollar',ph:'e.g. 5000000'},
+    {key:'scrap_reduction_pct',sec:'The Numbers',txt:'What % of scrap do you believe your solution can eliminate?',type:'percent',ph:'e.g. 50'},
+    {key:'compliance_risk',sec:'The Numbers',txt:'Any compliance or customer penalty risk?',type:'opt',opts:['Yes - significant','Yes - minor','No']}
+  ],
+  energy:[
+    {key:'energy_spend',sec:'The Numbers',txt:'Current annual energy spend for this process/area?',type:'dollar',ph:'e.g. 500000'},
+    {key:'energy_reduction_pct',sec:'The Numbers',txt:'What % reduction do you believe your solution can deliver?',type:'percent',ph:'e.g. 15'},
+    {key:'esg_mandate',sec:'The Numbers',txt:'Any sustainability or ESG mandates driving this?',type:'opt',opts:['Yes - corporate mandate','Yes - customer requirement','No']}
+  ],
+  throughput:[
+    {key:'current_units',sec:'The Numbers',txt:'Current units/parts per hour (or shift)?',type:'number',ph:'e.g. 500'},
+    {key:'target_units',sec:'The Numbers',txt:'Target units/parts per hour with your solution?',type:'number',ph:'e.g. 600'},
+    {key:'revenue_per_unit',sec:'The Numbers',txt:'Revenue or margin per unit?',type:'dollar',ph:'e.g. 25'},
+    {key:'capacity_constrained',sec:'The Numbers',txt:'Are they capacity constrained (turning away business)?',type:'opt',opts:['Yes','No, but growth planned','No']}
+  ]
+};
+
+var FINAL_QS=[
+  {key:'solution_cost',sec:'Your Solution',txt:"What's your solution cost?",type:'dollar',ph:'Annual cost or one-time investment'},
+  {key:'cost_type',sec:'Your Solution',txt:'Is this a one-time purchase or annual/recurring?',type:'opt',opts:['One-time','Annual recurring','Monthly recurring']}
+];
+
+var PAIN_MAP={
+  'Reducing unplanned downtime':'downtime',
+  'Reducing labor costs / headcount':'labor',
+  'Reducing scrap, rework, or quality defects':'scrap',
+  'Reducing energy or utility costs':'energy',
+  'Increasing throughput or capacity':'throughput'
+};
+
+// ===== STATE =====
+var cq=0,ans={},selopt=null,leadInfo={};
+
+// ===== UTILS =====
+function goTo(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});document.getElementById(id).classList.add('active')}
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2500)}
+function fmt(n){return Math.round(n).toLocaleString('en-US')}
+function fmtD(n){return'$'+fmt(n)}
+
+// ===== PRIVACY =====
+function openPrivacy(e){e.preventDefault();document.getElementById('privacyModal').classList.add('open')}
+function closePrivacy(e){if(e.target.id==='privacyModal')document.getElementById('privacyModal').classList.remove('open')}
+function closePrivacyModal(){document.getElementById('privacyModal').classList.remove('open')}
+
+// ===== QUESTION SEQUENCE =====
+function getPainKey(){return PAIN_MAP[ans.pain_type]||null}
+
+function getSeq(){
+  var qs=BASE_QS.slice();
+  var pk=getPainKey();
+  if(pk&&BRANCH_QS[pk])qs=qs.concat(BRANCH_QS[pk]);
+  qs=qs.concat(FINAL_QS);
+  return qs;
+}
+
+// ===== LEAD CAPTURE =====
+function submitLead(e){
+  e.preventDefault();
+  var btn=document.getElementById('gateBtn');
+  var err=document.getElementById('gateError');
+  err.style.display='none';
+
+  var email=document.getElementById('leadEmail').value.trim().toLowerCase();
+  var domain=email.split('@')[1]||'';
+  if(BLOCKED_DOMAINS.indexOf(domain)!==-1){
+    err.textContent='Please enter a business email address.';
+    err.style.display='block';
+    return;
+  }
+
+  leadInfo={
+    name:document.getElementById('leadName').value.trim(),
+    phone:document.getElementById('leadPhone').value.trim(),
+    email:email
+  };
+
+  btn.disabled=true;
+  btn.textContent='SUBMITTING...';
+
+  fetch(FORMSPREE,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({name:leadInfo.name,phone:leadInfo.phone,email:leadInfo.email,source:'Build My Business Case - Manufacturing'})
+  }).then(function(){
+    startQuestions();
+  }).catch(function(){
+    startQuestions();
+  });
+}
+
+function startQuestions(){
+  cq=0;ans={};selopt=null;
+  renderQ();
+  goTo('sq');
+}
+
+// ===== RENDER QUESTION =====
+function renderQ(){
+  var seq=getSeq();
+  if(cq>=seq.length)return;
+  var q=seq[cq];
+  var total=seq.length;
+  var pct=Math.round(((cq+1)/total)*100);
+  selopt=ans[q.key]||null;
+
+  var inp='';
+  if(q.type==='opt'){
+    inp='<div class="qopts" id="qopts">';
+    q.opts.forEach(function(o,i){
+      var sel=ans[q.key]===o?'sel':'';
+      inp+='<button class="qopt '+sel+'" data-idx="'+i+'">'+o+'</button>';
+    });
+    inp+='</div>';
+  }else if(q.type==='select'){
+    inp='<select class="q-select" id="qin">';
+    q.opts.forEach(function(o,i){
+      var lbl=(q.labels&&q.labels[i])||o;
+      var sel=ans[q.key]===o?' selected':'';
+      inp+='<option value="'+o+'"'+sel+'>'+lbl+'</option>';
+    });
+    inp+='</select>';
+  }else if(q.type==='text'){
+    inp='<input type="text" class="q-input" id="qin" placeholder="'+(q.ph||'')+'" value="'+(ans[q.key]||'')+'">';
+  }else if(q.type==='number'){
+    inp='<input type="number" class="q-input" id="qin" placeholder="'+(q.ph||'')+'" value="'+(ans[q.key]||'')+'" min="0">';
+  }else if(q.type==='dollar'){
+    inp='<div class="num-wrap"><span class="num-prefix">$</span><input type="number" class="num-input" id="qin" placeholder="'+(q.ph||'')+'" value="'+(ans[q.key]||'')+'" min="0"></div>';
+  }else if(q.type==='percent'){
+    inp='<div class="num-wrap"><input type="number" class="num-input" id="qin" placeholder="'+(q.ph||'')+'" value="'+(ans[q.key]||'')+'" min="0" max="100"><span class="num-suffix">%</span></div>';
+  }
+
+  var helper=q.helper?'<div class="q-helper">'+q.helper+'</div>':'';
+  var hint=q.hint?'<div class="qhint">'+q.hint+'</div>':'';
+  var back=cq>0?'<button class="btns" onclick="prevQ()">&larr; BACK</button>':'';
+  var isLast=cq===total-1;
+
+  document.getElementById('qcard').innerHTML=
+    '<div class="qprow"><div class="qptrack"><div class="qpfill" style="width:'+pct+'%"></div></div><div class="qptxt">'+(cq+1)+' / '+total+'</div></div>'+
+    '<div class="qsec">'+q.sec+'</div>'+
+    '<div class="qtxt">'+q.txt+'</div>'+
+    hint+inp+helper+
+    '<div class="qnav">'+back+'<button class="btnp" onclick="nextQ()">'+(isLast?'BUILD MY CASE &rarr;':'NEXT &rarr;')+'</button></div>';
+
+  var optsEl=document.getElementById('qopts');
+  if(optsEl){
+    optsEl.addEventListener('click',function(e){
+      var btn=e.target.closest('.qopt');
+      if(!btn)return;
+      var idx=parseInt(btn.dataset.idx);
+      document.querySelectorAll('.qopt').forEach(function(b){b.classList.remove('sel')});
+      btn.classList.add('sel');
+      selopt=q.opts[idx];
+    });
+  }
+}
+
+function saveAns(){
+  var seq=getSeq();
+  var q=seq[cq];
+  if(q.type==='opt'){
+    ans[q.key]=selopt||'';
+  }else{
+    var el=document.getElementById('qin');
+    ans[q.key]=el?el.value.trim():'';
+  }
+}
+
+function nextQ(){
+  saveAns();
+  var seq=getSeq();
+  if(cq<seq.length-1){
+    cq++;
+    renderQ();
+  }else{
+    calculate();
+  }
+}
+
+function prevQ(){
+  saveAns();
+  if(cq>0){
+    cq--;
+    renderQ();
+  }
+}
+
+// ===== CALCULATIONS =====
+function n(key){return parseFloat(ans[key])||0}
+
+function calculate(){
+  var pk=getPainKey();
+  var annualSavings=0;
+  var details={};
+
+  switch(pk){
+    case'downtime':
+      var annualDowntimeCost=n('downtime_hours_month')*12*n('cost_per_hour');
+      annualSavings=annualDowntimeCost*(n('reduction_pct')/100);
+      var newDowntime=n('downtime_hours_month')*(1-n('reduction_pct')/100);
+      details={annualDowntimeCost:annualDowntimeCost,monthlyDowntimeCost:n('downtime_hours_month')*n('cost_per_hour'),newDowntime:newDowntime,hoursRecovered:n('downtime_hours_month')*12*(n('reduction_pct')/100)};
+      break;
+    case'labor':
+      var currentLaborCost=n('employees')*n('cost_per_employee');
+      annualSavings=n('fte_reduction')*n('cost_per_employee');
+      details={currentLaborCost:currentLaborCost,laborType:ans.labor_type||'Headcount reduction'};
+      break;
+    case'scrap':
+      var currentScrapCost=n('annual_production')*(n('defect_rate')/100);
+      annualSavings=currentScrapCost*(n('scrap_reduction_pct')/100);
+      var newDefectRate=n('defect_rate')*(1-n('scrap_reduction_pct')/100);
+      details={currentScrapCost:currentScrapCost,newDefectRate:newDefectRate,complianceRisk:ans.compliance_risk||'No'};
+      break;
+    case'energy':
+      annualSavings=n('energy_spend')*(n('energy_reduction_pct')/100);
+      details={esgMandate:ans.esg_mandate||'No'};
+      break;
+    case'throughput':
+      var additionalUnits=n('target_units')-n('current_units');
+      var annualAdditional=additionalUnits*2000;
+      annualSavings=annualAdditional*n('revenue_per_unit');
+      var pctIncrease=n('current_units')>0?((additionalUnits/n('current_units'))*100):0;
+      details={additionalUnits:additionalUnits,annualAdditional:annualAdditional,pctIncrease:pctIncrease,capacityConstrained:ans.capacity_constrained||'No'};
+      break;
+  }
+
+  var solutionCost=n('solution_cost');
+  var costType=ans.cost_type||'One-time';
+  var annualInvestment=costType==='Monthly recurring'?solutionCost*12:solutionCost;
+  var totalInvestment3yr=costType==='One-time'?solutionCost:annualInvestment*3;
+  var paybackMonths=annualSavings>0?(annualInvestment/annualSavings)*12:999;
+  var threeYearValue=(annualSavings*3)-totalInvestment3yr;
+  var roi=totalInvestment3yr>0?(threeYearValue/totalInvestment3yr)*100:0;
+
+  buildResults({
+    painKey:pk,
+    annualSavings:annualSavings,
+    annualInvestment:annualInvestment,
+    totalInvestment3yr:totalInvestment3yr,
+    paybackMonths:paybackMonths,
+    threeYearValue:threeYearValue,
+    roi:roi,
+    costType:costType,
+    details:details
+  });
+
+  sendEnrichedLead();
+}
+
+function sendEnrichedLead(){
+  fetch(FORMSPREE,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      name:leadInfo.name,phone:leadInfo.phone,email:leadInfo.email,
+      company:ans.company||'',pain_type:ans.pain_type||'',vertical:ans.vertical||'',
+      source:'Build My Business Case - Manufacturing'
+    })
+  }).catch(function(){});
+}
+
+// ===== BUILD RESULTS =====
+function buildResults(r){
+  window._lastResults=r;
+  var company=ans.company||'This Company';
+  var role=ans.role||'Decision Maker';
+  var vertical=ans.vertical||'Manufacturing';
+
+  // Badge color
+  var badgeClass='green',badgeText='';
+  if(r.paybackMonths<=12){badgeClass='green';badgeText=r.paybackMonths<1?'< 1 MO':Math.round(r.paybackMonths)+' MO';}
+  else if(r.paybackMonths<=24){badgeClass='yellow';badgeText=Math.round(r.paybackMonths)+' MO';}
+  else{badgeClass='red';badgeText=r.paybackMonths>99?'> 24 MO':Math.round(r.paybackMonths)+' MO';}
+
+  // Results band
+  document.getElementById('rband').innerHTML=
+    '<div class="rband-info"><div class="rdname">'+company+'</div><div class="rdmeta">'+role+' &bull; '+vertical+'</div></div>'+
+    '<div class="rband-right">'+
+    '<div class="roi-badge '+badgeClass+'"><div class="roi-score">'+badgeText+'</div><div class="roi-label">Payback</div></div>'+
+    '</div>';
+
+  // Sidebar - The Numbers
+  var paybackTxt=r.paybackMonths<1?'Immediate':r.paybackMonths>99?'> 24 months':Math.round(r.paybackMonths)+' months';
+  var roiTxt=r.roi>0?fmt(Math.round(r.roi))+'%':'N/A';
+  var investLabel=r.costType==='One-time'?'One-time investment':r.costType==='Monthly recurring'?'Annual cost (monthly x12)':'Annual cost';
+
+  document.getElementById('rsidebar').innerHTML=
+    '<div class="sbhead">The Numbers</div>'+
+    '<div class="metric"><div class="metric-label">Annual Savings</div><div class="metric-value savings">'+fmtD(r.annualSavings)+'</div></div>'+
+    '<div class="metric"><div class="metric-label">'+investLabel+'</div><div class="metric-value neutral small">'+fmtD(r.annualInvestment)+'</div></div>'+
+    '<div class="metric"><div class="metric-label">Payback Period</div><div class="metric-value neutral small">'+paybackTxt+'</div><div class="metric-sub">'+(r.paybackMonths<=12?'Strong — under 12 months':r.paybackMonths<=24?'Moderate — 12-24 months':'Extended — over 24 months')+'</div></div>'+
+    '<div class="metric"><div class="metric-label">3-Year Net Value</div><div class="metric-value savings small">'+fmtD(r.threeYearValue)+'</div></div>'+
+    '<div class="metric"><div class="metric-label">3-Year ROI</div><div class="metric-value '+(r.roi>0?'savings':'neutral')+' small">'+roiTxt+'</div></div>';
+
+  // Main area
+  var problemHtml=buildProblem(r,company);
+  var impactHtml=buildImpact(r);
+  var personaHtml=buildPersona(r,role);
+
+  document.getElementById('rmain').innerHTML=
+    '<div class="rmain-title">Your Business Case</div>'+
+    '<div class="rmain-sub">A ready-to-share summary built for '+role+' at '+company+'.</div>'+
+    '<div class="r-card" style="animation-delay:0s"><div class="r-card-label">The Problem</div><div class="r-card-body">'+problemHtml+'</div></div>'+
+    '<div class="r-card" style="animation-delay:.1s"><div class="r-card-label">The Solution Impact</div><div class="r-card-body">'+impactHtml+'</div></div>'+
+    '<div class="r-card" style="animation-delay:.2s"><div class="r-card-label">Making the Case to '+role+'</div><div class="r-card-body">'+personaHtml+'</div></div>'+
+    '<div class="action-bar">'+
+    '<button class="act-btn pri" onclick="copySummary()">COPY SUMMARY</button>'+
+    '<button class="act-btn" onclick="window.print()">PRINT / SAVE PDF</button>'+
+    '<button class="act-btn" onclick="emailResults()">EMAIL ME THIS</button>'+
+    '</div>';
+
+  goTo('sr');
+}
+
+// ===== PROBLEM STATEMENTS =====
+function buildProblem(r,company){
+  var pk=r.painKey;
+  switch(pk){
+    case'downtime':
+      return'Unplanned downtime is currently costing <strong>'+company+'</strong> an estimated <strong>'+fmtD(r.details.monthlyDowntimeCost)+' per month</strong> &mdash; or <strong>'+fmtD(r.details.annualDowntimeCost)+' annually</strong>. At '+fmt(n('downtime_hours_month'))+' hours of downtime per month and '+fmtD(n('cost_per_hour'))+'/hour in lost production, this represents a significant drain on profitability.';
+    case'labor':
+      return'The current process requires <strong>'+fmt(n('employees'))+' employees</strong> at a fully-loaded cost of <strong>'+fmtD(r.details.currentLaborCost)+' annually</strong>. There\'s an opportunity to reduce labor costs by <strong>'+fmtD(r.annualSavings)+'</strong> through '+(r.details.laborType==='Headcount reduction'?'headcount reduction':'redeployment to higher-value work')+'.';
+    case'scrap':
+      return'At a <strong>'+n('defect_rate')+'% defect rate</strong> on '+fmtD(n('annual_production'))+' in annual production, <strong>'+company+'</strong> is losing approximately <strong>'+fmtD(r.details.currentScrapCost)+' per year</strong> to scrap and rework.'+(r.details.complianceRisk!=='No'?' There is also '+r.details.complianceRisk.toLowerCase()+' compliance or customer penalty risk that adds urgency to addressing this.':'');
+    case'energy':
+      var esgNote=ans.esg_mandate&&ans.esg_mandate!=='No'?' With '+(ans.esg_mandate==='Yes - corporate mandate'?'corporate sustainability mandates':'customer-driven sustainability requirements')+', there\'s additional urgency to act.':' With rising energy costs, there\'s a clear financial incentive to act.';
+      return'<strong>'+company+'</strong> is spending <strong>'+fmtD(n('energy_spend'))+' annually</strong> on energy for this process. A <strong>'+n('energy_reduction_pct')+'% reduction</strong> would save <strong>'+fmtD(r.annualSavings)+' per year</strong>.'+esgNote;
+    case'throughput':
+      var lostRevenue=r.details.additionalUnits*n('revenue_per_unit');
+      return'Current throughput of <strong>'+fmt(n('current_units'))+' units/hour</strong> is leaving <strong>'+fmtD(lostRevenue)+' per hour</strong> in potential revenue on the table. Increasing to <strong>'+fmt(n('target_units'))+' units/hour</strong> would capture an additional <strong>'+fmtD(r.annualSavings)+' annually</strong>.'+(r.details.capacityConstrained==='Yes'?' The fact that they are currently capacity constrained and turning away business makes this especially urgent.':'');
+    default:
+      return'Based on the numbers provided, there is an opportunity to save <strong>'+fmtD(r.annualSavings)+'</strong> annually.';
+  }
+}
+
+// ===== SOLUTION IMPACT =====
+function buildImpact(r){
+  var pk=r.painKey;
+  var mathHtml='<strong>How we calculated this:</strong><ul>';
+  var changesHtml='<strong>What changes:</strong><ul>';
+  var conservative=r.annualSavings*0.75;
+  var optimistic=r.annualSavings*1.25;
+
+  switch(pk){
+    case'downtime':
+      mathHtml+='<li>'+fmt(n('downtime_hours_month'))+' hours/month &times; '+fmtD(n('cost_per_hour'))+'/hour &times; 12 months = '+fmtD(r.details.annualDowntimeCost)+' annual downtime cost</li>';
+      mathHtml+='<li>'+n('reduction_pct')+'% reduction &times; '+fmtD(r.details.annualDowntimeCost)+' = <strong>'+fmtD(r.annualSavings)+' annual savings</strong></li>';
+      changesHtml+='<li>Downtime drops from '+fmt(n('downtime_hours_month'))+' hours/month to ~'+r.details.newDowntime.toFixed(1)+' hours/month</li>';
+      changesHtml+='<li>'+fmt(Math.round(r.details.hoursRecovered))+' production hours recovered annually</li>';
+      break;
+    case'labor':
+      mathHtml+='<li>'+fmt(n('employees'))+' employees &times; '+fmtD(n('cost_per_employee'))+'/year = '+fmtD(r.details.currentLaborCost)+' current labor cost</li>';
+      mathHtml+='<li>'+fmt(n('fte_reduction'))+' FTE reduction &times; '+fmtD(n('cost_per_employee'))+' = <strong>'+fmtD(r.annualSavings)+' annual savings</strong></li>';
+      changesHtml+='<li>Headcount goes from '+fmt(n('employees'))+' to '+fmt(n('employees')-n('fte_reduction'))+' on this process</li>';
+      changesHtml+='<li>'+(r.details.laborType==='Headcount reduction'?'Direct cost reduction hits the P&L immediately':'Freed-up employees redeployed to higher-value work')+'</li>';
+      break;
+    case'scrap':
+      mathHtml+='<li>'+fmtD(n('annual_production'))+' production &times; '+n('defect_rate')+'% defect rate = '+fmtD(r.details.currentScrapCost)+' annual scrap cost</li>';
+      mathHtml+='<li>'+n('scrap_reduction_pct')+'% elimination &times; '+fmtD(r.details.currentScrapCost)+' = <strong>'+fmtD(r.annualSavings)+' annual savings</strong></li>';
+      changesHtml+='<li>Defect rate drops from '+n('defect_rate')+'% to ~'+r.details.newDefectRate.toFixed(1)+'%</li>';
+      changesHtml+='<li>Scrap and rework costs reduced by '+fmtD(r.annualSavings)+' per year</li>';
+      break;
+    case'energy':
+      mathHtml+='<li>'+fmtD(n('energy_spend'))+' annual energy spend &times; '+n('energy_reduction_pct')+'% reduction = <strong>'+fmtD(r.annualSavings)+' annual savings</strong></li>';
+      changesHtml+='<li>Energy costs for this area drop by '+n('energy_reduction_pct')+'%</li>';
+      changesHtml+='<li>Annual spend goes from '+fmtD(n('energy_spend'))+' to ~'+fmtD(n('energy_spend')-r.annualSavings)+'</li>';
+      if(r.details.esgMandate&&r.details.esgMandate!=='No')changesHtml+='<li>Supports sustainability goals and reporting requirements</li>';
+      break;
+    case'throughput':
+      mathHtml+='<li>('+fmt(n('target_units'))+' target - '+fmt(n('current_units'))+' current) = '+fmt(r.details.additionalUnits)+' additional units/hour</li>';
+      mathHtml+='<li>'+fmt(r.details.additionalUnits)+' units/hour &times; 2,000 hours/year &times; '+fmtD(n('revenue_per_unit'))+'/unit = <strong>'+fmtD(r.annualSavings)+' annual value</strong></li>';
+      changesHtml+='<li>Throughput increases '+r.details.pctIncrease.toFixed(0)+'% ('+fmt(n('current_units'))+' &rarr; '+fmt(n('target_units'))+' units/hour)</li>';
+      changesHtml+='<li>'+fmt(r.details.annualAdditional)+' additional units per year</li>';
+      if(pk==='throughput')changesHtml+='<li><em>Based on ~2,000 production hours/year. Adjust for multi-shift operations.</em></li>';
+      break;
+  }
+  mathHtml+='</ul>';
+  changesHtml+='</ul>';
+
+  var scenarioHtml=
+    '<div class="scenario-row">'+
+    '<div class="scenario"><div class="scenario-label">Conservative (75%)</div><div class="scenario-value con">'+fmtD(conservative)+'/yr</div></div>'+
+    '<div class="scenario"><div class="scenario-label">Base Case</div><div class="scenario-value base">'+fmtD(r.annualSavings)+'/yr</div></div>'+
+    '<div class="scenario"><div class="scenario-label">Optimistic (125%)</div><div class="scenario-value opt">'+fmtD(optimistic)+'/yr</div></div>'+
+    '</div>';
+
+  return mathHtml+changesHtml+scenarioHtml;
+}
+
+// ===== PERSONA GUIDANCE =====
+var PERSONA={
+  'Plant Manager / Site Leader':{
+    cares:'Plant Managers are measured on safety, quality, delivery, and cost &mdash; in that order. They think in shifts, headcount, and uptime. They hate surprises and vendor drama.',
+    frame:'Frame this as a reliability and uptime improvement first, cost savings second. Lead with what changes on the floor, not in the spreadsheet.',
+    points:[
+      'This directly improves uptime and production reliability &mdash; fewer fire drills for your team',
+      'The payback is fast enough to show results before your next quarterly review',
+      'Your team spends less time reacting and more time on planned, proactive work'
+    ]
+  },
+  'VP or Director of Operations':{
+    cares:'VP/Directors of Ops see across plants and budget cycles. They need to justify spend to the C-suite with hard ROI numbers and competitive benchmarks.',
+    frame:'Position this as a measurable, scalable investment &mdash; not a discretionary line item. Connect it to metrics they report up.',
+    points:[
+      'The ROI and payback period make this a clear win for the business case',
+      'This is scalable across multiple lines or facilities once proven',
+      'Industry benchmarks show top performers are already making this kind of investment'
+    ]
+  },
+  'Maintenance / Reliability Manager':{
+    cares:'Maintenance leaders are buried in reactive work and skeptical of anything that adds to their plate. They track MTBF, MTTR, and PM compliance.',
+    frame:'Frame this as a way to reduce chaos, not add complexity. Show them it works alongside what they already have and makes their life easier.',
+    points:[
+      'This reduces unplanned calls and emergency repairs for your team',
+      'Implementation works alongside your existing maintenance program &mdash; not a rip and replace',
+      'The savings free up budget for the tools and parts you have been requesting'
+    ]
+  },
+  'Engineering Manager':{
+    cares:'Engineers want proof, not promises. They will validate every claim and care deeply about integration, accuracy, and realistic timelines.',
+    frame:'Lead with data and a realistic implementation plan. Acknowledge what could go wrong and how it gets handled.',
+    points:[
+      'Here is the data behind these numbers &mdash; happy to validate them with your team',
+      'Integration with your current systems is straightforward and well-documented',
+      'A focused pilot can prove this out in weeks, not months, with minimal disruption'
+    ]
+  },
+  'Procurement / Purchasing':{
+    cares:'Procurement evaluates cost, risk, and vendor qualification. They cannot champion your deal, but they can block or slow it significantly.',
+    frame:'Make their job easy. Provide clear pricing, ROI documentation, and references. Remove friction from the approval process.',
+    points:[
+      'Total cost of ownership over 3 years is clearly documented with strong ROI',
+      'We can provide references from similar manufacturing operations',
+      'The implementation plan minimizes production disruption and procurement risk'
+    ]
+  },
+  'C-Suite (CEO, COO, CFO)':{
+    cares:'Executives need the 30-second version: What does it cost, what does it save, and when do we see results? They think in strategic terms.',
+    frame:'Give them the business impact in dollars and timeline. Connect it to their top priorities &mdash; not operational details.',
+    points:[
+      'This delivers strong ROI with a clear, fast payback period',
+      'The 3-year net value significantly exceeds the investment',
+      'This directly addresses the issue that is impacting your margins today'
+    ]
+  },
+  'Other':{
+    cares:'Focus on the financial case and connect it to their specific area of responsibility and the metrics they are measured on.',
+    frame:'Lead with the numbers, then connect to what matters most in their day-to-day role.',
+    points:[
+      'The annual savings represent a significant, measurable improvement',
+      'Payback happens quickly &mdash; this investment starts returning value fast',
+      'The business case is built on conservative estimates &mdash; the actual impact could be higher'
+    ]
+  }
+};
+
+function buildPersona(r,role){
+  var p=PERSONA[role]||PERSONA['Other'];
+  var html='<div class="persona-tip"><div class="persona-tip-label">What They Care About</div><div class="persona-tip-txt">'+p.cares+'</div></div>';
+  html+='<div class="persona-tip" style="margin-top:10px"><div class="persona-tip-label">How to Frame This</div><div class="persona-tip-txt">'+p.frame+'</div></div>';
+  html+='<div style="margin-top:14px"><strong>Key Talking Points:</strong><ul>';
+  p.points.forEach(function(pt){html+='<li>'+pt+'</li>'});
+  html+='</ul></div>';
+  return html;
+}
+
+// ===== ACTIONS =====
+function buildTextSummary(){
+  var company=ans.company||'[Company]';
+  var role=ans.role||'[Role]';
+  var seq=getSeq();
+  var r=window._lastResults;
+  if(!r)return'';
+
+  var paybackTxt=r.paybackMonths<1?'Immediate':r.paybackMonths>99?'> 24 months':Math.round(r.paybackMonths)+' months';
+  var roiTxt=r.roi>0?fmt(Math.round(r.roi))+'%':'N/A';
+
+  var txt='BUSINESS CASE: '+company+'\n';
+  txt+='Prepared for: '+role+'\n';
+  txt+='Pain Area: '+(ans.pain_type||'')+'\n';
+  txt+='Industry: '+(ans.vertical||'')+'\n';
+  txt+='\n--- THE NUMBERS ---\n';
+  txt+='Annual Savings: '+fmtD(r.annualSavings)+'\n';
+  txt+='Your Investment: '+fmtD(r.annualInvestment)+' ('+r.costType+')\n';
+  txt+='Payback Period: '+paybackTxt+'\n';
+  txt+='3-Year Net Value: '+fmtD(r.threeYearValue)+'\n';
+  txt+='3-Year ROI: '+roiTxt+'\n';
+  txt+='\n--- SCENARIO RANGE ---\n';
+  txt+='Conservative (75%): '+fmtD(r.annualSavings*0.75)+'/year\n';
+  txt+='Base Case: '+fmtD(r.annualSavings)+'/year\n';
+  txt+='Optimistic (125%): '+fmtD(r.annualSavings*1.25)+'/year\n';
+  txt+='\n---\nBuilt with Build My Business Case | Powered by Sapper\n';
+  return txt;
+}
+
+function copySummary(){
+  var txt=buildTextSummary();
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(txt).then(function(){showToast('Summary copied to clipboard')});
+  }else{
+    var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    showToast('Summary copied to clipboard');
+  }
+}
+
+function emailResults(){
+  var txt=buildTextSummary();
+  fetch(FORMSPREE,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      name:leadInfo.name,
+      email:leadInfo.email,
+      _replyto:leadInfo.email,
+      subject:'Your Business Case - '+(ans.company||'Manufacturing'),
+      results_summary:txt,
+      source:'Build My Business Case - Manufacturing (Email Results)'
+    })
+  }).then(function(){
+    showToast('Results sent to '+leadInfo.email);
+  }).catch(function(){
+    showToast('Could not send — try Copy Summary instead');
+  });
+}
+
+function resetAll(){
+  cq=0;ans={};selopt=null;
+  document.getElementById('leadForm').reset();
+  goTo('sl');
+}
+
+
+</script>
+</body>
+</html>

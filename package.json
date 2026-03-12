@@ -1,0 +1,6 @@
+{
+  "name": "build-my-business-case",
+  "version": "1.0.0",
+  "description": "Manufacturing ROI business case calculator — powered by Sapper",
+  "license": "ISC"
+}
