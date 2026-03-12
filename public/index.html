@@ -228,7 +228,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fb);min-height:100v
       <div class="hero-note">Takes about 2 minutes</div>
       <div class="hero-div"></div>
       <div class="stats-row">
-        <div><div class="stat-n">5</div><div class="stat-l">Pain categories covered</div></div>
+        <div><div class="stat-n">9</div><div class="stat-l">Problem categories covered</div></div>
         <div><div class="stat-n">1</div><div class="stat-l">Page business case output</div></div>
         <div><div class="stat-n">$</div><div class="stat-l">Real dollar figures</div></div>
       </div>
@@ -334,7 +334,7 @@ var BLOCKED_DOMAINS=['gmail.com','yahoo.com','hotmail.com','outlook.com','aol.co
 
 // ===== QUESTION DEFINITIONS =====
 var BASE_QS=[
-  {key:'pain_type',sec:'Getting Started',txt:'What type of pain or gain are you solving?',type:'opt',opts:['Reducing unplanned downtime','Reducing labor costs / headcount','Reducing scrap, rework, or quality defects','Reducing energy or utility costs','Increasing throughput or capacity']},
+  {key:'pain_type',sec:'Getting Started',txt:'What problem are you solving?',type:'opt',opts:['Reducing unplanned downtime','Reducing labor costs / headcount','Reducing scrap, rework, or quality defects','Reducing energy or utility costs','Increasing throughput or capacity','Filling open roles faster (staffing / recruiting)','Reducing supplier or vendor costs','Improving safety or compliance','Reducing inventory or carrying costs','Other — I\'ll describe it'],other_key:'pain_type_other'},
   {key:'vertical',sec:'Getting Started',txt:'What type of manufacturing operation is this?',type:'select',opts:['','Automotive (OEM or Tier supplier)','Aerospace & Defense','Food & Beverage / CPG','Metal Fabrication / Job Shop','Plastics / Injection Molding','Pharma / Medical Device','General Industrial / Heavy Equipment','Other Manufacturing'],labels:['Select one...','Automotive (OEM or Tier supplier)','Aerospace & Defense','Food & Beverage / CPG','Metal Fabrication / Job Shop','Plastics / Injection Molding','Pharma / Medical Device','General Industrial / Heavy Equipment','Other Manufacturing']},
   {key:'company',sec:'Getting Started',txt:"What's the prospect's company name?",type:'text',ph:'e.g. Acme Manufacturing'},
   {key:'role',sec:'Framing the Case',txt:'Who is this business case for?',hint:'Their role helps frame the output.',type:'opt',opts:['Plant Manager / Site Leader','VP or Director of Operations','Maintenance / Reliability Manager','Engineering Manager','Procurement / Purchasing','C-Suite (CEO, COO, CFO)','Other']}
@@ -369,6 +369,33 @@ var BRANCH_QS={
     {key:'target_units',sec:'The Numbers',txt:'Target units/parts per hour with your solution?',type:'number',ph:'e.g. 600'},
     {key:'revenue_per_unit',sec:'The Numbers',txt:'Revenue or margin per unit?',type:'dollar',ph:'e.g. 25'},
     {key:'capacity_constrained',sec:'The Numbers',txt:'Are they capacity constrained (turning away business)?',type:'opt',opts:['Yes','No, but growth planned','No']}
+  ],
+  staffing:[
+    {key:'open_roles',sec:'The Numbers',txt:'How many open roles are they typically trying to fill?',type:'number',ph:'e.g. 15'},
+    {key:'cost_per_vacancy',sec:'The Numbers',txt:'Estimated cost per unfilled role per month?',type:'dollar',ph:'e.g. 5000',helper:'Include overtime, temp labor, lost production. Typical: $3K-$10K/month per vacancy'},
+    {key:'avg_time_to_fill',sec:'The Numbers',txt:'Average days to fill a role currently?',type:'number',ph:'e.g. 45'},
+    {key:'new_time_to_fill',sec:'The Numbers',txt:'What could your solution reduce that to (days)?',type:'number',ph:'e.g. 21'}
+  ],
+  vendor:[
+    {key:'current_vendor_spend',sec:'The Numbers',txt:'Current annual spend with the vendor(s) or process being replaced?',type:'dollar',ph:'e.g. 500000'},
+    {key:'vendor_savings_pct',sec:'The Numbers',txt:'What % savings can your solution deliver?',type:'percent',ph:'e.g. 15',helper:'Include price reduction, fewer defects, better terms, etc.'},
+    {key:'vendor_switch_risk',sec:'The Numbers',txt:'Is there a switching cost or risk?',type:'opt',opts:['Minimal — easy transition','Moderate — some requalification needed','Significant — but savings justify it']}
+  ],
+  safety:[
+    {key:'incidents_per_year',sec:'The Numbers',txt:'Estimated recordable incidents or near-misses per year?',type:'number',ph:'e.g. 8'},
+    {key:'cost_per_incident',sec:'The Numbers',txt:'Average cost per incident?',type:'dollar',ph:'e.g. 25000',helper:'Include medical, lost time, investigation, fines. OSHA average: $42K per recordable'},
+    {key:'incident_reduction_pct',sec:'The Numbers',txt:'What % reduction can your solution deliver?',type:'percent',ph:'e.g. 40'},
+    {key:'regulatory_pressure',sec:'The Numbers',txt:'Is there regulatory or audit pressure driving this?',type:'opt',opts:['Yes - active citations or audit findings','Yes - upcoming audit or new regulation','No, but proactive improvement']}
+  ],
+  inventory:[
+    {key:'current_inventory_value',sec:'The Numbers',txt:'Current inventory value (on hand)?',type:'dollar',ph:'e.g. 2000000'},
+    {key:'carrying_cost_pct',sec:'The Numbers',txt:'Annual carrying cost as % of inventory value?',type:'percent',ph:'e.g. 25',helper:'Typical: 20-30%. Includes storage, insurance, obsolescence, capital cost'},
+    {key:'inventory_reduction_pct',sec:'The Numbers',txt:'What % inventory reduction can your solution deliver?',type:'percent',ph:'e.g. 20'}
+  ],
+  custom:[
+    {key:'custom_problem',sec:'The Numbers',txt:'Describe the problem in one sentence.',type:'text',ph:'e.g. Reducing changeover time between production runs'},
+    {key:'current_annual_cost',sec:'The Numbers',txt:'What is this problem costing them annually?',type:'dollar',ph:'e.g. 200000',helper:'Your best estimate of the total annual impact'},
+    {key:'savings_pct',sec:'The Numbers',txt:'What % of that cost can your solution eliminate?',type:'percent',ph:'e.g. 30'}
   ]
 };
 
@@ -382,7 +409,12 @@ var PAIN_MAP={
   'Reducing labor costs / headcount':'labor',
   'Reducing scrap, rework, or quality defects':'scrap',
   'Reducing energy or utility costs':'energy',
-  'Increasing throughput or capacity':'throughput'
+  'Increasing throughput or capacity':'throughput',
+  'Filling open roles faster (staffing / recruiting)':'staffing',
+  'Reducing supplier or vendor costs':'vendor',
+  'Improving safety or compliance':'safety',
+  'Reducing inventory or carrying costs':'inventory',
+  'Other — I\'ll describe it':'custom'
 };
 
 // ===== STATE =====
@@ -400,7 +432,7 @@ function closePrivacy(e){if(e.target.id==='privacyModal')document.getElementById
 function closePrivacyModal(){document.getElementById('privacyModal').classList.remove('open')}
 
 // ===== QUESTION SEQUENCE =====
-function getPainKey(){return PAIN_MAP[ans.pain_type]||null}
+function getPainKey(){return PAIN_MAP[ans.pain_type]||(ans.pain_type?'custom':null)}
 
 function getSeq(){
   var qs=BASE_QS.slice();
@@ -462,12 +494,17 @@ function renderQ(){
 
   var inp='';
   if(q.type==='opt'){
+    var hasOtherKey=!!q.other_key;
+    var isOtherSelected=hasOtherKey&&ans[q.other_key];
     inp='<div class="qopts" id="qopts">';
     q.opts.forEach(function(o,i){
-      var sel=ans[q.key]===o?'sel':'';
+      var sel=(!isOtherSelected&&ans[q.key]===o)?'sel':'';
       inp+='<button class="qopt '+sel+'" data-idx="'+i+'">'+o+'</button>';
     });
     inp+='</div>';
+    if(hasOtherKey){
+      inp+='<input type="text" class="q-input" id="qother" placeholder="Describe the problem you\'re solving..." value="'+(ans[q.other_key]||'')+'" style="margin-top:8px;display:'+(isOtherSelected?'block':'none')+'">';
+    }
   }else if(q.type==='select'){
     inp='<select class="q-select" id="qin">';
     q.opts.forEach(function(o,i){
@@ -507,6 +544,11 @@ function renderQ(){
       document.querySelectorAll('.qopt').forEach(function(b){b.classList.remove('sel')});
       btn.classList.add('sel');
       selopt=q.opts[idx];
+      var otherIn=document.getElementById('qother');
+      if(otherIn){
+        if(selopt&&selopt.indexOf('Other')===0){otherIn.style.display='block';otherIn.focus();}
+        else{otherIn.style.display='none';otherIn.value='';}
+      }
     });
   }
 }
@@ -516,6 +558,14 @@ function saveAns(){
   var q=seq[cq];
   if(q.type==='opt'){
     ans[q.key]=selopt||'';
+    if(q.other_key){
+      var otherIn=document.getElementById('qother');
+      if(selopt&&selopt.indexOf('Other')===0&&otherIn&&otherIn.value.trim()){
+        ans[q.other_key]=otherIn.value.trim();
+      }else{
+        ans[q.other_key]='';
+      }
+    }
   }else{
     var el=document.getElementById('qin');
     ans[q.key]=el?el.value.trim():'';
@@ -577,6 +627,32 @@ function calculate(){
       annualSavings=annualAdditional*n('revenue_per_unit');
       var pctIncrease=n('current_units')>0?((additionalUnits/n('current_units'))*100):0;
       details={additionalUnits:additionalUnits,annualAdditional:annualAdditional,pctIncrease:pctIncrease,capacityConstrained:ans.capacity_constrained||'No'};
+      break;
+    case'staffing':
+      var monthsSaved=(n('avg_time_to_fill')-n('new_time_to_fill'))/30;
+      var costPerVacancyAnnual=n('cost_per_vacancy')*12;
+      annualSavings=n('open_roles')*n('cost_per_vacancy')*monthsSaved;
+      details={monthsSaved:monthsSaved,daysSaved:n('avg_time_to_fill')-n('new_time_to_fill'),totalVacancyCost:n('open_roles')*costPerVacancyAnnual};
+      break;
+    case'vendor':
+      annualSavings=n('current_vendor_spend')*(n('vendor_savings_pct')/100);
+      details={switchRisk:ans.vendor_switch_risk||'Minimal'};
+      break;
+    case'safety':
+      var currentIncidentCost=n('incidents_per_year')*n('cost_per_incident');
+      annualSavings=currentIncidentCost*(n('incident_reduction_pct')/100);
+      var newIncidents=n('incidents_per_year')*(1-n('incident_reduction_pct')/100);
+      details={currentIncidentCost:currentIncidentCost,newIncidents:newIncidents,regulatoryPressure:ans.regulatory_pressure||'No'};
+      break;
+    case'inventory':
+      var carryingCost=n('current_inventory_value')*(n('carrying_cost_pct')/100);
+      annualSavings=carryingCost*(n('inventory_reduction_pct')/100);
+      var newInventoryValue=n('current_inventory_value')*(1-n('inventory_reduction_pct')/100);
+      details={carryingCost:carryingCost,newInventoryValue:newInventoryValue};
+      break;
+    case'custom':
+      annualSavings=n('current_annual_cost')*(n('savings_pct')/100);
+      details={customProblem:ans.custom_problem||ans.pain_type_other||'the identified problem'};
       break;
   }
 
@@ -684,6 +760,17 @@ function buildProblem(r,company){
     case'throughput':
       var lostRevenue=r.details.additionalUnits*n('revenue_per_unit');
       return'Current throughput of <strong>'+fmt(n('current_units'))+' units/hour</strong> is leaving <strong>'+fmtD(lostRevenue)+' per hour</strong> in potential revenue on the table. Increasing to <strong>'+fmt(n('target_units'))+' units/hour</strong> would capture an additional <strong>'+fmtD(r.annualSavings)+' annually</strong>.'+(r.details.capacityConstrained==='Yes'?' The fact that they are currently capacity constrained and turning away business makes this especially urgent.':'');
+    case'staffing':
+      return'<strong>'+company+'</strong> is carrying <strong>'+fmt(n('open_roles'))+' open roles</strong> at an estimated cost of <strong>'+fmtD(n('cost_per_vacancy'))+'/month per vacancy</strong>. At '+fmt(n('avg_time_to_fill'))+' days to fill, that adds up fast. Reducing time-to-fill to '+fmt(n('new_time_to_fill'))+' days would save <strong>'+fmtD(r.annualSavings)+' annually</strong> in vacancy costs alone &mdash; not counting the impact on overtime, quality, and team burnout.';
+    case'vendor':
+      return'<strong>'+company+'</strong> is currently spending <strong>'+fmtD(n('current_vendor_spend'))+' annually</strong> with their current vendor or process. A <strong>'+n('vendor_savings_pct')+'% improvement</strong> through better pricing, quality, or efficiency would deliver <strong>'+fmtD(r.annualSavings)+' in annual savings</strong>.'+(r.details.switchRisk!=='Minimal — easy transition'?' Switching costs are manageable and the savings justify the transition.':'');
+    case'safety':
+      return'<strong>'+company+'</strong> is experiencing approximately <strong>'+fmt(n('incidents_per_year'))+' recordable incidents per year</strong> at an estimated cost of <strong>'+fmtD(n('cost_per_incident'))+' per incident</strong> &mdash; totaling <strong>'+fmtD(r.details.currentIncidentCost)+' annually</strong>. A '+n('incident_reduction_pct')+'% reduction would save <strong>'+fmtD(r.annualSavings)+'</strong> in direct costs, plus the harder-to-quantify benefits of fewer lost workdays, lower insurance premiums, and better OSHA standing.'+(r.details.regulatoryPressure.indexOf('Yes')===0?' There is additional urgency given '+r.details.regulatoryPressure.toLowerCase()+'.':'');
+    case'inventory':
+      return'<strong>'+company+'</strong> is carrying <strong>'+fmtD(n('current_inventory_value'))+' in inventory</strong> with an estimated carrying cost of <strong>'+n('carrying_cost_pct')+'% annually</strong> ('+fmtD(r.details.carryingCost)+'/year). Reducing inventory by '+n('inventory_reduction_pct')+'% would free up <strong>'+fmtD(n('current_inventory_value')*(n('inventory_reduction_pct')/100))+' in working capital</strong> and save <strong>'+fmtD(r.annualSavings)+'</strong> per year in carrying costs.';
+    case'custom':
+      var probDesc=r.details.customProblem||'the identified operational challenge';
+      return'<strong>'+company+'</strong> is spending an estimated <strong>'+fmtD(n('current_annual_cost'))+' per year</strong> on '+probDesc+'. With a <strong>'+n('savings_pct')+'% improvement</strong>, your solution would deliver <strong>'+fmtD(r.annualSavings)+' in annual savings</strong>.';
     default:
       return'Based on the numbers provided, there is an opportunity to save <strong>'+fmtD(r.annualSavings)+'</strong> annually.';
   }
@@ -727,7 +814,37 @@ function buildImpact(r){
       mathHtml+='<li>'+fmt(r.details.additionalUnits)+' units/hour &times; 2,000 hours/year &times; '+fmtD(n('revenue_per_unit'))+'/unit = <strong>'+fmtD(r.annualSavings)+' annual value</strong></li>';
       changesHtml+='<li>Throughput increases '+r.details.pctIncrease.toFixed(0)+'% ('+fmt(n('current_units'))+' &rarr; '+fmt(n('target_units'))+' units/hour)</li>';
       changesHtml+='<li>'+fmt(r.details.annualAdditional)+' additional units per year</li>';
-      if(pk==='throughput')changesHtml+='<li><em>Based on ~2,000 production hours/year. Adjust for multi-shift operations.</em></li>';
+      changesHtml+='<li><em>Based on ~2,000 production hours/year. Adjust for multi-shift operations.</em></li>';
+      break;
+    case'staffing':
+      mathHtml+='<li>'+fmt(n('open_roles'))+' open roles &times; '+fmtD(n('cost_per_vacancy'))+'/month &times; '+r.details.monthsSaved.toFixed(1)+' months saved = <strong>'+fmtD(r.annualSavings)+' annual savings</strong></li>';
+      changesHtml+='<li>Time-to-fill drops from '+fmt(n('avg_time_to_fill'))+' days to '+fmt(n('new_time_to_fill'))+' days ('+fmt(r.details.daysSaved)+' days faster)</li>';
+      changesHtml+='<li>Less overtime, fewer temp workers, and reduced strain on existing team</li>';
+      changesHtml+='<li>Faster ramp means new hires reach full productivity sooner</li>';
+      break;
+    case'vendor':
+      mathHtml+='<li>'+fmtD(n('current_vendor_spend'))+' current spend &times; '+n('vendor_savings_pct')+'% savings = <strong>'+fmtD(r.annualSavings)+' annual savings</strong></li>';
+      changesHtml+='<li>Annual vendor/process spend drops from '+fmtD(n('current_vendor_spend'))+' to ~'+fmtD(n('current_vendor_spend')-r.annualSavings)+'</li>';
+      changesHtml+='<li>Savings come from better pricing, quality, efficiency, or terms</li>';
+      break;
+    case'safety':
+      mathHtml+='<li>'+fmt(n('incidents_per_year'))+' incidents &times; '+fmtD(n('cost_per_incident'))+'/incident = '+fmtD(r.details.currentIncidentCost)+' annual incident cost</li>';
+      mathHtml+='<li>'+n('incident_reduction_pct')+'% reduction = <strong>'+fmtD(r.annualSavings)+' annual savings</strong></li>';
+      changesHtml+='<li>Recordable incidents drop from '+fmt(n('incidents_per_year'))+' to ~'+r.details.newIncidents.toFixed(1)+' per year</li>';
+      changesHtml+='<li>Fewer lost workdays, lower workers comp premiums, better OSHA standing</li>';
+      changesHtml+='<li>Reduced risk of costly citations, shutdowns, and reputational damage</li>';
+      break;
+    case'inventory':
+      mathHtml+='<li>'+fmtD(n('current_inventory_value'))+' inventory &times; '+n('carrying_cost_pct')+'% carrying cost = '+fmtD(r.details.carryingCost)+' annual carrying cost</li>';
+      mathHtml+='<li>'+n('inventory_reduction_pct')+'% reduction in carrying cost = <strong>'+fmtD(r.annualSavings)+' annual savings</strong></li>';
+      changesHtml+='<li>Inventory value drops from '+fmtD(n('current_inventory_value'))+' to ~'+fmtD(r.details.newInventoryValue)+'</li>';
+      changesHtml+='<li>'+fmtD(n('current_inventory_value')*(n('inventory_reduction_pct')/100))+' in working capital freed up</li>';
+      changesHtml+='<li>Less obsolescence risk, less warehouse space needed</li>';
+      break;
+    case'custom':
+      mathHtml+='<li>'+fmtD(n('current_annual_cost'))+' annual cost &times; '+n('savings_pct')+'% improvement = <strong>'+fmtD(r.annualSavings)+' annual savings</strong></li>';
+      changesHtml+='<li>Annual cost of this problem drops from '+fmtD(n('current_annual_cost'))+' to ~'+fmtD(n('current_annual_cost')-r.annualSavings)+'</li>';
+      changesHtml+='<li>Measurable improvement that shows up on the bottom line</li>';
       break;
   }
   mathHtml+='</ul>';
